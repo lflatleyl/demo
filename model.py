@@ -93,15 +93,28 @@ def encode_rows(rows):
         feat.extend(numeric_vals)
         for val in numeric_vals:
             feat.append(val * val)
+        for val in numeric_vals:
+            feat.append(val * val * val)
+        for val in numeric_vals:
+            feat.append(val * val * val * val)
+        for val in numeric_vals:
+            feat.append(val * val * val * val * val)
         for i in range(len(numeric_vals)):
             for j in range(i + 1, len(numeric_vals)):
                 feat.append(numeric_vals[i] * numeric_vals[j])
+        cat_indicators = []
         for col in CATEGORICAL_COLS:
             mapping = category_maps[col]
             val = row[col]
             index = mapping.get(val)
-            for k in range(len(mapping)):
-                feat.append(1.0 if k == index else 0.0)
+            indicators = [1.0 if k == index else 0.0 for k in range(len(mapping))]
+            feat.extend(indicators)
+            cat_indicators.append(indicators)
+        # numeric x categorical interactions
+        for indicators in cat_indicators:
+            for ind in indicators:
+                for num_val in numeric_vals:
+                    feat.append(ind * num_val)
         encoded.append(feat)
     return encoded
 
@@ -224,7 +237,7 @@ def main():
     train_X = standardize(train_X, means, stds)
     test_X = standardize(test_X, means, stds)
 
-    w, b = train_linear_regression_closed_form(train_X, train_y, reg=0.1)
+    w, b = train_linear_regression_closed_form(train_X, train_y, reg=0.0)
     train_pred = predict(train_X, w, b)
     error = rmse(train_y, train_pred)
     print('Training RMSE:', error)
