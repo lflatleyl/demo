@@ -93,6 +93,7 @@ def encode_rows(rows):
         feat.extend(numeric_vals)
         for val in numeric_vals:
             feat.append(val * val)
+            feat.append(val * val * val)
         for i in range(len(numeric_vals)):
             for j in range(i + 1, len(numeric_vals)):
                 feat.append(numeric_vals[i] * numeric_vals[j])
@@ -180,7 +181,7 @@ def train_linear_regression_closed_form(X, y, reg=0.1):
     Xb = [row + [1.0] for row in X]
     Xt = transpose(Xb)
     XtX = matmul(Xt, Xb)
-    for i in range(len(XtX)):
+    for i in range(len(XtX)-1):
         XtX[i][i] += reg
     XtX_inv = invert_matrix(XtX)
     XtY = matmul(Xt, [[val] for val in y])
@@ -226,7 +227,7 @@ def main():
     train_X = standardize(train_X, means, stds)
     test_X = standardize(test_X, means, stds)
 
-    w, b = train_linear_regression_closed_form(train_X, train_y, reg=0.0)
+    w, b = train_linear_regression_closed_form(train_X, train_y, reg=0.1)
     train_pred = predict(train_X, w, b)
     error = rmse(train_y, train_pred)
     print('Training RMSE:', error)
