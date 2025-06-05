@@ -93,12 +93,6 @@ def encode_rows(rows):
         feat.extend(numeric_vals)
         for val in numeric_vals:
             feat.append(val * val)
-        for val in numeric_vals:
-            feat.append(val * val * val)
-        for val in numeric_vals:
-            feat.append(val * val * val * val)
-        for val in numeric_vals:
-            feat.append(val * val * val * val * val)
         for i in range(len(numeric_vals)):
             for j in range(i + 1, len(numeric_vals)):
                 feat.append(numeric_vals[i] * numeric_vals[j])
@@ -110,11 +104,6 @@ def encode_rows(rows):
             indicators = [1.0 if k == index else 0.0 for k in range(len(mapping))]
             feat.extend(indicators)
             cat_indicators.append(indicators)
-        # numeric x categorical interactions
-        for indicators in cat_indicators:
-            for ind in indicators:
-                for num_val in numeric_vals:
-                    feat.append(ind * num_val)
         encoded.append(feat)
     return encoded
 
